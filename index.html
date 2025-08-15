@@ -513,7 +513,7 @@
         game: "League of Legends",
         role: "Mid",
         team: "BDS",
-        country: "France/Maroc",
+        country: "France",
         region: "EU",
         league: "LEC",
         age: 22,
@@ -730,7 +730,7 @@
     function classForState(state) {
       switch (state) {
         case "match": return "bg-green-500 text-white";
-        case "close": return "bg-yellow-400 text-black";
+        case "close": return "bg-red-500 text-black";
         case "off":   return "bg-gray-200 text-gray-900";
         default:      return "bg-slate-700 text-white";
       }
@@ -889,7 +889,7 @@
                   <input
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Ex: Faker, ZywOo…"
+                    placeholder="Ex: Canna, Hans Sama…"
                     className="w-full rounded-xl bg-slate-900 border border-slate-700 px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500"
                   />
 
@@ -998,7 +998,7 @@
                 Remplace la liste <code>PLAYERS</code> par tes données (JSON, API, etc.).
                 Champs: <code>name</code>, <code>alias</code>, <code>game</code>, <code>role</code>, <code>team</code>, <code>league</code>, <code>region</code>, <code>country</code>, <code>age</code>, <code>photoUrl</code>.
               </p>
-              <p>Hébergement: balance ce fichier sur Netlify Drop, GitHub Pages ou Vercel (Static) — aucun build requis.</p>
+              <p>Pour le moment, seul le LEC est disponible mais prochainement seront disponible la LCK et la LPL :D</p>
             </footer>
           </div>
         </div>
