@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Guess The Esport Player</title>
+  <meta name="description" content="Un mini-jeu type Who Are Ya? adapté à l'esport. Devine le joueur en 8 essais !" />
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%231a1f2e'/%3E%3Ctext x='50' y='58' text-anchor='middle' font-size='58' fill='%23a78bfa' font-family='Arial'%3E%E2%98%86%3C/text%3E%3C/svg%3E">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <nav>
+    <a href="LEC.html">LEC</a>
+    <a href="LCK.html">LCK/LPL</a>
+    <a href="RL.html">Rocket League</a>
+    <a onclick="showPage('about')">Autre jeux</a>
+  </nav>
+
+  <div id="root"></div>
+
+  <!-- React 18 UMD + Babel for in-browser JSX (simple static hosting) -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script type="text/babel">
+    const { useEffect, useMemo, useRef, useState } = React;
+
+    // ------------------------- Demo dataset -------------------------
+    const PLAYERS = [
+      {
+        id: 1,
+        name: "Axel Tourret",
+        alias: "Vatira",
+        game: "Rocket League",
+        role: "Player",
+        team: "Karmine Corp",
+        country: "France",
+        region: "EU",
+        league: "RLCS",
+        age: 19,
+        photoUrl: "Photos/RL/EU/Karmine/Vatira.jpg"
+      },
+      {
+        id: 2,
+        name: "Tristan Soyez",
+        alias: "Atow.",
+        game: "Rocket League",
+        role: "Player",
+        team: "Karmine Corp",
+        country: "Belgique",
+        region: "EU",
+        league: "RLCS",
+        age: 18,
+        photoUrl: "Photos/RL/EU/Karmine/Atow.jpg"
+      },
+      {
+        id: 3,
+        name: "Samy Hajji",
+        alias: "Dralii",
+        game: "Rocket League",
+        role: "Player",
+        team: "Karmine Corp",
+        country: "Maroc",
+        region: "EU",
+        league: "RLCS",
+        age: 17,
+        photoUrl: "Photos/RL/EU/Karmine/dralii.jpg"
+      },
+      {
+        id: 4,
+        name: "Victor Francal",
+        alias: "Ferra",
+        game: "Rocket League",
+        role: "Coach",
+        team: "Karmine Corp",
+        country: "France",
+        region: "EU",
+        league: "RLCS",
+        age: 28,
+        photoUrl: "Photos/RL/EU/Karmine/Ferra.jpg"
+      },
+      {
+        id: 5,
+        name: "Alexis Bernier",
+        alias: "Zen",
+        game: "Rocket League",
+        role: "Player",
+        team: "Vitality",
+        country: "France",
+        region: "EU",
+        league: "RLCS",
+        age: 18,
+        photoUrl: "Photos/RL/EU/Vitality/zen.jpg"
+      },
+      {
+        id: 6,
+        name: "Evan Rogez",
+        alias: "Monkey Moon",
+        game: "Rocket League",
+        role: "Player",
+        team: "Vitality",
+        country: "France",
+        region: "EU",
+        league: "RLCS",
+        age: 22,
+        photoUrl: "Photos/RL/EU/Vitality/Monkey_Moon.jpg"
+      },
+      {
+        id: 7,
+        name: "Brice Bigeard",
+        alias: "Exotiik",
+        game: "Rocket League",
+        role: "Player",
+        team: "Vitality",
+        country: "France",
+        region: "EU",
+        league: "RLCS",
+        age: 22,
+        photoUrl: "Photos/RL/EU/Vitality/ExoTiiK.jpg"
+      },
+      {
+        id: 8,
+        name: "Andy Landais",
+        alias: "Kassio",
+        game: "Rocket League",
+        role: "Coach",
+        team: "Vitality",
+        country: "France",
+        region: "EU",
+        league: "RLCS",
+        age: 24,
+        photoUrl: "Photos/RL/EU/Vitality/Kassio.jpg"
+      },
+      {
+        id: 9,
+        name: "Enzo Grondein",
+        alias: "Seikoo",
+        game: "Rocket League",
+        role: "Player",
+        team: "M8",
+        country: "France",
+        region: "EU",
+        league: "RLCS",
+        age: 21,
+        photoUrl: "Photos/RL/EU/M8/Seikoo.jpg"
+      },
+      {
+        id: 10,
+        name: "Charles Sabiani",
+        alias: "Juicy",
+        game: "Rocket League",
+        role: "Player",
+        team: "M8",
+        country: "France",
+        region: "EU",
+        league: "RLCS",
+        age: 20,
+        photoUrl: "Photos/RL/EU/M8/juicy.jpg"
+      },
+      {
+        id: 11,
+        name: "Liam Daillac",
+        alias: "Yujin",
+        game: "Rocket League",
+        role: "Player",
+        team: "M8",
+        country: "France",
+        region: "EU",
+        league: "RLCS",
+        age: 17,
+        photoUrl: "Photos/RL/EU/M8/yujin.jpg"
+      },
+      {
+        id: 12,
+        name: "Benjamin Wagner",
+        alias: "Eversax",
+        game: "Rocket League",
+        role: "Coach",
+        team: "M8",
+        country: "Belgique",
+        region: "EU",
+        league: "RLCS",
+        age: 29,
+        photoUrl: "Photos/RL/EU/M8/Eversax.jpg"
+      },
+      {
+        id: 13,
+        name: "Nassim Bali",
+        alias: "Nass",
+        game: "Rocket League",
+        role: "Player",
+        team: "NIP",
+        country: "Maroc",
+        region: "EU",
+        league: "RLCS",
+        age: 18,
+        photoUrl: "Photos/RL/EU/NIP/nass.jpg"
+      },
+      {
+        id: 14,
+        name: "Oskar Gozdowski",
+        alias: "Oski",
+        game: "Rocket League",
+        role: "Player",
+        team: "NIP",
+        country: "Pologne",
+        region: "EU",
+        league: "RLCS",
+        age: 18,
+        photoUrl: "Photos/RL/EU/NIP/Oski.jpg"
+      },
+      {
+        id: 15,
+        name: "Andrea Radovanovic",
+        alias: "Radosin",
+        game: "Rocket League",
+        role: "Player",
+        team: "NIP",
+        country: "France",
+        region: "EU",
+        league: "RLCS",
+        age: 21,
+        photoUrl: "Photos/RL/EU/NIP/Radosin.jpg"
+      },
+      {
+        id: 16,
+        name: "Nicolai Vistesen Andersen",
+        alias: "Snaski",
+        game: "Rocket League",
+        role: "Coach",
+        team: "NIP",
+        country: "Danemark",
+        region: "EU",
+        league: "RLCS",
+        age: 29,
+        photoUrl: "Photos/RL/EU/NIP/Snaski.jpg"
+      },
+      {
+        id: 17,
+        name: "Gaspar Rosalen Andres",
+        alias: "Stizzy",
+        game: "Rocket League",
+        role: "Player",
+        team: "Dignitas",
+        country: "Espagne",
+        region: "EU",
+        league: "RLCS",
+        age: 18,
+        photoUrl: "Photos/RL/EU/Dignitas/Stizzy.jpg"
+      },
+      {
+        id: 18,
+        name: "Jack Benton",
+        alias: "ApparentlyJack",
+        game: "Rocket League",
+        role: "Player",
+        team: "Dignitas",
+        country: "Angleterre",
+        region: "EU",
+        league: "RLCS",
+        age: 21,
+        photoUrl: "Photos/RL/EU/Dignitas/ApparentlyJack.jpg"
+      },
+      {
+        id: 19,
+        name: "Joris Robben",
+        alias: "Joreuz",
+        game: "Rocket League",
+        role: "Player",
+        team: "Dignitas",
+        country: "Pays-Bas",
+        region: "EU",
+        league: "RLCS",
+        age: 20,
+        photoUrl: "Photos/RL/EU/Dignitas/Joreuz.jpg"
+      },
+      {
+        id: 20,
+        name: "Jos Van Meurs",
+        alias: "ViolentPanda",
+        game: "Rocket League",
+        role: "Coach",
+        team: "Dignitas",
+        country: "Pays-Bas",
+        region: "EU",
+        league: "RLCS",
+        age: 26,
+        photoUrl: "Photos/RL/EU/Dignitas/ViolentPanda.jpg"
+      },
+      {
+        id: 21,
+        name: "Archie Pickthall",
+        alias: "Archie",
+        game: "Rocket League",
+        role: "Player",
+        team: "Geekay Esport",
+        country: "Angleterre",
+        region: "EU",
+        league: "RLCS",
+        age: 20,
+        photoUrl: "Photos/RL/EU/Geekay/Archie.jpg"
+      },
+      {
+        id: 22,
+        name: "Joseph Young",
+        alias: "Joyo",
+        game: "Rocket League",
+        role: "Player",
+        team: "Geekay Esport",
+        country: "Angleterre",
+        region: "EU",
+        league: "RLCS",
+        age: 19,
+        photoUrl: "Photos/RL/EU/Geekay/Joyo.jpg"
+      },
+      {
+        id: 23,
+        name: "Ole Van Doorn",
+        alias: "oaly.",
+        game: "Rocket League",
+        role: "Player",
+        team: "Geekay Esport",
+        country: "Pays-Bas",
+        region: "EU",
+        league: "RLCS",
+        age: 21,
+        photoUrl: "Photos/RL/EU/Geekay/oaly.jpg"
+      },
+      {
+        id: 24,
+        name: "Dylan Pickering",
+        alias: "eesko",
+        game: "Rocket League",
+        role: "Coach",
+        team: "Geekay Esport",
+        country: "Angleterre",
+        region: "EU",
+        league: "RLCS",
+        age: 23,
+        photoUrl: "Photos/RL/EU/Geekay/eekso.jpg"
+      },
+      {
+        id: 25,
+        name: "Massimo Franceschi",
+        alias: "Atomic",
+        game: "Rocket League",
+        role: "Player",
+        team: "NRG",
+        country: "USA",
+        region: "NA",
+        league: "RLCS",
+        age: 22,
+        photoUrl: "Photos/RL/NA/NRG/Atomic.jpg"
+      },
+      {
+        id: 26,
+        name: "Landon Konerman",
+        alias: "BeastMode",
+        game: "Rocket League",
+        role: "Player",
+        team: "NRG",
+        country: "USA",
+        region: "NA",
+        league: "RLCS",
+        age: 20,
+        photoUrl: "Photos/RL/NA/NRG/BeastMode.jpg"
+      },
+      {
+        id: 27,
+        name: "Daniel Piecenski",
+        alias: "Daniel",
+        game: "Rocket League",
+        role: "Player",
+        team: "NRG",
+        country: "USA",
+        region: "NA",
+        league: "RLCS",
+        age: 18,
+        photoUrl: "Photos/RL/NA/NRG/Daniel.jpg"
+      },
+      {
+        id: 28,
+        name: "Matthew Ackermann",
+        alias: "Satthew",
+        game: "Rocket League",
+        role: "Coach",
+        team: "NRG",
+        country: "USA",
+        region: "NA",
+        league: "RLCS",
+        age: 26,
+        photoUrl: "Photos/RL/NA/NRG/Satthew.jpg"
+      },
+      {
+        id: 29,
+        name: "Jason Corral",
+        alias: "Firstkiller",
+        game: "Rocket League",
+        role: "Player",
+        team: "Ultimates",
+        country: "USA",
+        region: "NA",
+        league: "RLCS",
+        age: 20,
+        photoUrl: "Photos/RL/NA/Ultimates/Firstkiller.jpg"
+      },
+      {
+        id: 30,
+        name: "Nick Iwanski",
+        alias: "Chronic",
+        game: "Rocket League",
+        role: "Player",
+        team: "Ultimates",
+        country: "USA",
+        region: "NA",
+        league: "RLCS",
+        age: 19,
+        photoUrl: "Photos/RL/NA/Ultimates/Chronic.jpg"
+      },
+      {
+        id: 31,
+        name: "Logan Wilt",
+        alias: "Lj",
+        game: "Rocket League",
+        role: "Player",
+        team: "Ultimates",
+        country: "USA",
+        region: "NA",
+        league: "RLCS",
+        age: 20,
+        photoUrl: "Photos/RL/NA/Ultimates/Lj.jpg"
+      },
+      {
+        id: 32,
+        name: "Kais Zehri",
+        alias: "Sadjunior",
+        game: "Rocket League",
+        role: "Coach",
+        team: "Ultimates",
+        country: "Canada",
+        region: "NA",
+        league: "RLCS",
+        age: 27,
+        photoUrl: "Photos/RL/NA/Ultimates/Sadjunior.jpg"
+      },
+      {
+        id: 33,
+        name: "Zachary Stone",
+        alias: "Scrzbbles",
+        game: "Rocket League",
+        role: "Player",
+        team: "SSG",
+        country: "USA",
+        region: "NA",
+        league: "RLCS",
+        age: 15,
+        photoUrl: "Photos/RL/NA/SSG/Scrzbbles.jpg"
+      },
+      {
+        id: 34,
+        name: "Jack LeDuc",
+        alias: "reveal",
+        game: "Rocket League",
+        role: "Player",
+        team: "SSG",
+        country: "USA",
+        region: "NA",
+        league: "RLCS",
+        age: 18,
+        photoUrl: "Photos/RL/NA/SSG/.jpg"
+      },
+      {
+        id: 35,
+        name: "Angel Lopez",
+        alias: "kofyr",
+        game: "Rocket League",
+        role: "Player",
+        team: "SSG",
+        country: "USA",
+        region: "NA",
+        league: "RLCS",
+        age: 18,
+        photoUrl: "Photos/RL/NA/SSG/kofyr.jpg"
+      },
+      {
+        id: 36,
+        name: "André Filipe",
+        alias: "Xpére",
+        game: "Rocket League",
+        role: "Coach",
+        team: "SSG",
+        country: "Portugal",
+        region: "NA",
+        league: "RLCS",
+        age: 25,
+        photoUrl: "Photos/RL/NA/SSG/Xpére.jpg"
+      },
+      {
+        id: 37,
+        name: "Christopher Acevedo",
+        alias: "MaJicBear",
+        game: "Rocket League",
+        role: "Player",
+        team: "GenG",
+        country: "USA",
+        region: "NA",
+        league: "RLCS",
+        age: 20,
+        photoUrl: "Photos/RL/NA/GENG/MaJicBear.jpg"
+      },
+      {
+        id: 38,
+        name: "Carlos Aguado",
+        alias: "CHEESE.",
+        game: "Rocket League",
+        role: "Player",
+        team: "GenG",
+        country: "USA",
+        region: "NA",
+        league: "RLCS",
+        age: 20,
+        photoUrl: "Photos/RL/NA/GENG/CHEESE.jpg"
+      },
+      {
+        id: 39,
+        name: "Justin Morales",
+        alias: "jstn.",
+        game: "Rocket League",
+        role: "Player",
+        team: "GenG",
+        country: "USA",
+        region: "NA",
+        league: "RLCS",
+        age: 23,
+        photoUrl: "Photos/RL/NA/GENG/Jstn.jpg"
+      },
+      {
+        id: 40,
+        name: "Gregory Alex",
+        alias: "RawGreg",
+        game: "Rocket League",
+        role: "Coach",
+        team: "GenG",
+        country: "USA",
+        region: "NA",
+        league: "RLCS",
+        age: 31,
+        photoUrl: "Photos/RL/NA/GENG/RawGreg.jpg"
+      },
+      {
+        id: 41,
+        name: "Yan Xisto Nolasco",
+        alias: "yanxnz",
+        game: "Rocket League",
+        role: "Player",
+        team: "Furia",
+        country: "Brésil",
+        region: "SAM",
+        league: "RLCS",
+        age: 21,
+        photoUrl: "Photos/RL/SA/Furia/YANXNZ.jpg"
+      },
+      {
+        id: 42,
+        name: "Gabriel Souza Buzon",
+        alias: "Lostt",
+        game: "Rocket League",
+        role: "Player",
+        team: "Furia",
+        country: "Brésil",
+        region: "SAM",
+        league: "RLCS",
+        age: 20,
+        photoUrl: "Photos/RL/SA/Furia/Lostt.jpg"
+      },
+      {
+        id: 43,
+        name: "Arthur Langsch Miguel",
+        alias: "DRUFINHO",
+        game: "Rocket League",
+        role: "Player",
+        team: "Furia",
+        country: "Brésil",
+        region: "SAM",
+        league: "RLCS",
+        age: 20,
+        photoUrl: "Photos/RL/SA/Furia/DRUFINHO.jpg"
+      },
+      {
+        id: 44,
+        name: "Mateus Santos",
+        alias: "STL",
+        game: "Rocket League",
+        role: "Coach",
+        team: "Furia",
+        country: "Brésil",
+        region: "SAM",
+        league: "RLCS",
+        age: 26,
+        photoUrl: "Photos/RL/SA/Furia/STL.jpg"
+      },
+      {
+        id: 45,
+        name: "Danilo Michelini",
+        alias: "kv1",
+        game: "Rocket League",
+        role: "Player",
+        team: "Secret",
+        country: "Brésil",
+        region: "SAM",
+        league: "RLCS",
+        age: 19,
+        photoUrl: "Photos/RL/SA/Secret/kv1.jpg"
+      },
+      {
+        id: 46,
+        name: "Joao Motta",
+        alias: "Motta",
+        game: "Rocket League",
+        role: "Player",
+        team: "Secret",
+        country: "Brésil",
+        region: "SAM",
+        league: "RLCS",
+        age: 18,
+        photoUrl: "Photos/RL/SA/Secret/Motta.jpg"
+      },
+      {
+        id: 47,
+        name: "Pedro Henrique Gomes",
+        alias: "swiftt",
+        game: "Rocket League",
+        role: "Player",
+        team: "Secret",
+        country: "Brésil",
+        region: "SAM",
+        league: "RLCS",
+        age: 17,
+        photoUrl: "Photos/RL/SA/Secret/swiftt.jpg"
+      },
+      {
+        id: 48,
+        name: "Bruno Roschel",
+        alias: "brunovisqui",
+        game: "Rocket League",
+        role: "Coach",
+        team: "Secret",
+        country: "Brésil",
+        region: "SAM",
+        league: "RLCS",
+        age: 26,
+        photoUrl: "Photos/RL/SA/Secret/brunovisqui.jpg"
+      },
+      {
+        id: 49,
+        name: "Mohammed Khalid",
+        alias: "Trk511",
+        game: "Rocket League",
+        role: "Player",
+        team: "Falcons",
+        country: "Arabie Saoudite",
+        region: "MENA",
+        league: "RLCS",
+        age: 20,
+        photoUrl: "Photos/RL/MENA/Falcons/Trk511.jpg"
+      },
+      {
+        id: 50,
+        name: "Saleh Abdullah",
+        alias: "Rw9",
+        game: "Rocket League",
+        role: "Player",
+        team: "Falcons",
+        country: "Arabie Saoudite",
+        region: "MENA",
+        league: "RLCS",
+        age: 18,
+        photoUrl: "Photos/RL/MENA/Falcons/Rw9.jpg"
+      },
+      {
+        id: 51,
+        name: "Yazeed Abdullah",
+        alias: "Kiileerrz",
+        game: "Rocket League",
+        role: "Player",
+        team: "Falcons",
+        country: "Arabie Saoudite",
+        region: "MENA",
+        league: "RLCS",
+        age: 18,
+        photoUrl: "Photos/RL/MENA/Falcons/Kiileerrz.jpg"
+      },
+      {
+        id: 52,
+        name: "Abdulrahman Saad",
+        alias: "d7oom-24",
+        game: "Rocket League",
+        role: "Coach",
+        team: "Falcons",
+        country: "Arabie Saoudite",
+        region: "MENA",
+        league: "RLCS",
+        age: 22,
+        photoUrl: "Photos/RL/MENA/Falcons/d7oom.jpg"
+      },
+      {
+        id: 53,
+        name: "Hisham Alqadi",
+        alias: "Nwpo",
+        game: "Rocket League",
+        role: "Player",
+        team: "Twisted Minds",
+        country: "Arabie Saoudite",
+        region: "MENA",
+        league: "RLCS",
+        age: 18,
+        photoUrl: "Photos/RL/MENA/TM/Nwpo.jpg"
+      },
+      {
+        id: 54,
+        name: "Finlay Ferguson",
+        alias: "rise.",
+        game: "Rocket League",
+        role: "Player",
+        team: "Twisted Minds",
+        country: "Angleterre",
+        region: "MENA",
+        league: "RLCS",
+        age: 20,
+        photoUrl: "Photos/RL/MENA/TM/rise.jpg"
+      },
+      {
+        id: 55,
+        name: "Sergio Pérez Cortés",
+        alias: "AtomiK",
+        game: "Rocket League",
+        role: "Player",
+        team: "Twisted Minds",
+        country: "Espagne",
+        region: "MENA",
+        league: "RLCS",
+        age: 20,
+        photoUrl: "Photos/RL/MENA/TM/AtomiK.jpg"
+      },
+      {
+        id: 56,
+        name: "André Dias",
+        alias: "blau",
+        game: "Rocket League",
+        role: "Coach",
+        team: "Twisted Minds",
+        country: "Portugal",
+        region: "MENA",
+        league: "RLCS",
+        age: 24,
+        photoUrl: "Photos/RL/MENA/TM/blau.jpg"
+      },
+    ];
+
+    const ATTRIBUTE_COLUMNS = [
+      { key: "game", label: "Jeu" },
+      { key: "role", label: "Rôle" },
+      { key: "team", label: "Équipe" },
+      { key: "league", label: "Ligue" },
+      { key: "region", label: "Région" },
+      { key: "country", label: "Pays" },
+      { key: "age", label: "Âge" },
+    ];
+
+    const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+
+    function seedFromDate(d) {
+      const yyyy = d.getFullYear();
+      const mm = d.getMonth() + 1;
+      const dd = d.getDate();
+      let x = yyyy * 10000 + mm * 100 + dd;
+      x ^= x << 13; x ^= x >> 17; x ^= x << 5;
+      return Math.abs(x);
+    }
+
+    function pickerDaily(arr, tzOffsetMinutes = 120) {
+      const now = new Date();
+      const local = new Date(now.getTime() + tzOffsetMinutes * 60000);
+      const s = seedFromDate(local);
+      const idx = s % arr.length;
+      return arr[idx];
+    }
+
+    function compareField(field, guess, target) {
+      const gv = guess[field];
+      const tv = target[field];
+      if (gv === tv) return { state: "match", text: String(gv) };
+
+      if (field === "age") {
+        const dir = gv > tv ? "↓" : "↑";
+        return { state: "off", text: `${gv} ${dir}` };
+      }
+      if (field === "country" && guess.region === target.region) {
+        return { state: "close", text: String(gv) };
+      }
+      if (field === "league" && guess.region === target.region) {
+        return { state: "close", text: String(gv) };
+      }
+      if (field === "role" && gv && tv && gv.split("/").some((r) => String(tv).includes(r))) {
+        return { state: "close", text: String(gv) };
+      }
+      return { state: "miss", text: String(gv ?? "—") };
+    }
+
+    function classForState(state) {
+      switch (state) {
+        case "match": return "bg-green-500 text-white";
+        case "close": return "bg-red-500 text-black";
+        case "off":   return "bg-gray-200 text-gray-900";
+        default:      return "bg-slate-700 text-white";
+      }
+    }
+
+    function silhouetteStyle(percent) {
+      const blur = clamp(16 - (percent / 100) * 16, 0, 16);
+      const dim = clamp(0.7 - (percent / 100) * 0.7, 0, 0.7);
+      return { filter: `blur(${blur}px)`, opacity: 1 - dim };
+    }
+
+    function buildShare(guesses, target) {
+      const header = `GuessTheEsportPlayer — ${guesses.length}/8`;
+      const lines = guesses.map((g) => {
+        return ATTRIBUTE_COLUMNS.map(({ key }) => {
+          const { state } = compareField(key, g, target);
+          if (state === "match") return "🟩";
+          if (state === "close") return "🟨";
+          if (state === "off") return "⬜";
+          return "⬛";
+        }).join("");
+      });
+      return [header, ...lines].join("\\n");
+    }
+
+    function App() {
+      const [practice, setPractice] = useState(false);
+      const [target, setTarget] = useState(() => pickerDaily(PLAYERS));
+      const [query, setQuery] = useState("");
+      const [guesses, setGuesses] = useState([]);
+      const [selectedIndex, setSelectedIndex] = useState(0);
+      const [message, setMessage] = useState("");
+
+      const maxTries = 8;
+      const gameOver = guesses.length >= maxTries || (guesses.length > 0 && guesses[guesses.length - 1].id === target.id);
+      const won = guesses.some((g) => g.id === target.id);
+
+      const suggestions = useMemo(() => {
+        const q = query.trim().toLowerCase();
+        if (!q) return [];
+        return PLAYERS.filter((p) =>
+          [p.name, p.alias].some((s) => s?.toLowerCase().includes(q))
+        ).slice(0, 8);
+      }, [query]);
+
+      const revealPercent = useMemo(() => {
+        if (won) return 100;
+        const matches = guesses.reduce((acc, g) => {
+          let m = 0;
+          ATTRIBUTE_COLUMNS.forEach(({ key }) => {
+            if (compareField(key, g, target).state === "match") m += 1;
+          });
+          return acc + m;
+        }, 0);
+        return clamp(Math.round((matches / (ATTRIBUTE_COLUMNS.length * maxTries)) * 100) + guesses.length * 5, 0, 99);
+      }, [guesses, target, won]);
+
+      useEffect(() => {
+        const onKey = (e) => {
+          if (e.key === "ArrowDown") {
+            e.preventDefault();
+            setSelectedIndex((i) => clamp(i + 1, 0, Math.max(0, suggestions.length - 1)));
+          } else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            setSelectedIndex((i) => clamp(i - 1, 0, Math.max(0, suggestions.length - 1)));
+          } else if (e.key === "Enter" && suggestions[selectedIndex]) {
+            e.preventDefault();
+            onPick(suggestions[selectedIndex]);
+          }
+        };
+        window.addEventListener("keydown", onKey);
+        return () => window.removeEventListener("keydown", onKey);
+      }, [suggestions, selectedIndex]);
+
+      function onPick(player) {
+        if (gameOver) return;
+        if (guesses.some((g) => g.id === player.id)) {
+          setMessage("Déjà essayé.");
+          return;
+        }
+        setGuesses((gs) => [...gs, player]);
+        setQuery("");
+        setSelectedIndex(0);
+        setMessage("");
+      }
+
+      function onReroll() {
+        setGuesses([]);
+        setQuery("");
+        setSelectedIndex(0);
+        if (practice) {
+          const pool = PLAYERS.filter((p) => p.id !== target.id);
+          setTarget(pool[Math.floor(Math.random() * pool.length)]);
+        } else {
+          setTarget(pickerDaily(PLAYERS));
+        }
+      }
+
+      async function onShare() {
+        const text = buildShare(guesses, target);
+        try {
+          await navigator.clipboard.writeText(text);
+          setMessage("Résultat copié dans le presse-papiers ✨");
+        } catch (e) {
+          setMessage("Impossible de copier. (Permissions clipboard)");
+        }
+      }
+
+      return (
+        <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-slate-50 p-4 sm:p-8">
+          <div className="mx-auto max-w-5xl">
+            <header className="flex flex-col sm:flex-row gap-4 items-center justify-between mb-6">
+              <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+                Guess The <span className="text-indigo-400">Esport Player</span>
+              </h1>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setPractice((p) => !p)}
+                  className={"px-3 py-2 text-sm rounded-2xl shadow " + (practice ? "bg-indigo-500" : "bg-slate-800")}
+                  title="Basculer en mode entraînement"
+                >
+                  {practice ? "Mode entraînement" : "Mode quotidien"}
+                </button>
+                <button
+                  onClick={onReroll}
+                  className="px-3 py-2 text-sm rounded-2xl shadow bg-slate-800 hover:bg-slate-700"
+                >
+                  {practice ? "Nouveau tirage" : "Recharger le jour"}
+                </button>
+              </div>
+            </header>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+              <div className="lg:col-span-1">
+                <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-slate-800 shadow-xl">
+                  {target.photoUrl ? (
+                    <img
+                      src={target.photoUrl}
+                      alt="Player"
+                      className="w-full h-full object-cover"
+                      style={silhouetteStyle(revealPercent)}
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-6xl">🕵️‍♂️</div>
+                  )}
+                  <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent text-sm flex items-center justify-between">
+                    <span>Révélation: {revealPercent}%</span>
+                    {won && <span className="font-semibold text-green-400">Bravo !</span>}
+                  </div>
+                </div>
+              </div>
+
+              <div className="lg:col-span-2">
+                <div className="rounded-2xl bg-slate-800/70 border border-slate-700 p-4 shadow-xl">
+                  <label className="block text-sm text-slate-300 mb-2">Tape un pseudo ou un nom</label>
+                  <input
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Ex: Canna, Hans Sama…"
+                    className="w-full rounded-xl bg-slate-900 border border-slate-700 px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+
+                  {suggestions.length > 0 && (
+                    <ul className="mt-3 max-h-64 overflow-auto rounded-xl border border-slate-700 bg-slate-900 divide-y divide-slate-800">
+                      {suggestions.map((p, i) => (
+                        <li
+                          key={p.id}
+                          onClick={() => onPick(p)}
+                          className={"px-4 py-3 cursor-pointer hover:bg-slate-800 flex items-center justify-between " + (i === selectedIndex ? "bg-slate-800" : "")}
+                        >
+                          <div>
+                            <div className="font-semibold">{p.alias}</div>
+                            <div className="text-xs text-slate-400">{p.name}</div>
+                          </div>
+                          <div className="text-xs text-slate-400">{p.team} • {p.game}</div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  <div className="flex items-center justify-between mt-4 text-sm text-slate-400">
+                    <span>Essais: <b className="text-slate-200">{guesses.length}</b> / {maxTries}</span>
+                    <div className="flex gap-2">
+                      <button onClick={onShare} disabled={guesses.length === 0} className="px-3 py-2 rounded-xl bg-indigo-600 disabled:opacity-50">
+                        Partager
+                      </button>
+                      <button
+                        onClick={() => { setGuesses([]); setMessage("Réinitialisé."); }}
+                        className="px-3 py-2 rounded-xl bg-slate-700"
+                      >
+                        Réinitialiser
+                      </button>
+                    </div>
+                  </div>
+                  {message && <div className="mt-2 text-sm text-slate-300">{message}</div>}
+                </div>
+              </div>
+            </div>
+
+            <section className="rounded-2xl bg-slate-800/70 border border-slate-700 p-4 shadow-xl">
+              <h2 className="text-lg font-semibold mb-3">Tes propositions</h2>
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-sm">
+                  <thead className="text-left text-slate-300">
+                    <tr>
+                      <th className="p-2">Joueur</th>
+                      {ATTRIBUTE_COLUMNS.map((c) => (
+                        <th key={c.key} className="p-2 whitespace-nowrap">{c.label}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {guesses.map((g) => (
+                      <tr key={g.id} className="border-t border-slate-700">
+                        <td className="p-2">
+                          <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-lg bg-slate-700 overflow-hidden">
+                              <img src={g.photoUrl} alt="" className="w-full h-full object-cover" />
+                            </div>
+                            <div>
+                              <div className="font-semibold">{g.alias}</div>
+                              <div className="text-xs text-slate-400">{g.name}</div>
+                            </div>
+                          </div>
+                        </td>
+                        {ATTRIBUTE_COLUMNS.map(({ key }) => {
+                          const { state, text } = compareField(key, g, target);
+                          return (
+                            <td key={key} className="p-2">
+                              <span className={"px-2 py-1 rounded-lg text-xs font-semibold inline-block " + classForState(state)}>
+                                {text}
+                              </span>
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    ))}
+                    {guesses.length === 0 && (
+                      <tr>
+                        <td colSpan={1 + ATTRIBUTE_COLUMNS.length} className="p-6 text-center text-slate-400">
+                          Aucune proposition pour l'instant. Cherche un joueur ci-dessus.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="mt-4 p-4 rounded-xl bg-slate-900 border border-slate-700">
+                {won ? (
+                  <div>
+                    <div className="text-green-400 font-semibold mb-1">Tu as trouvé !</div>
+                    <div className="text-slate-300">C'était <b>{target.alias}</b> ({target.name}).</div>
+                  </div>
+                ) : (
+                  <div>
+                    <div className="text-slate-300">Tente ta chance en {practice ? "entraînement" : "quotidien"}.</div>
+                  </div>
+                )}
+              </div>
+            </section>
+
+            <footer className="text-xs text-slate-400 mt-8 space-y-2">
+              <p>
+                Remplace la liste <code>PLAYERS</code> par tes données (JSON, API, etc.).
+                Champs: <code>name</code>, <code>alias</code>, <code>game</code>, <code>role</code>, <code>team</code>, <code>league</code>, <code>region</code>, <code>country</code>, <code>age</code>, <code>photoUrl</code>.
+              </p>
+              <p>Pour le moment, seul le LEC est disponible mais prochainement seront disponible la LCK et la LPL :D</p>
+            </footer>
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+  </script>
+</body>
+</html>

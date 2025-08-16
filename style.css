@@ -1,0 +1,61 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f9f9f9;
+}
+
+/* Navbar */
+nav {
+    background: #222;
+    color: white;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 15px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+nav a:hover {
+    color: #ff4757;
+}
+
+/* Contenu */
+.page {
+    display: none;
+    padding: 30px;
+}
+
+.active {
+    display: block;
+}
+
+/* Tableau joueurs */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th,
+td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+th {
+    background: #333;
+    color: white;
+}
+
+img {
+    width: 50px;
+    border-radius: 50%;
+}
